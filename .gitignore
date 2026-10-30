@@ -21,3 +21,13 @@ runs/
 *.mov
 *.wav
 *.mp3
+# credentials and generated bundles (never commit)
+.env*
+*.key
+*.pem
+secrets*
+*.secret
+dist/
+*-google-colab/
+*-google-colab*.zip
+*-outputs.zip

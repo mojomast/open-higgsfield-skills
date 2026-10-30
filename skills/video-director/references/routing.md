@@ -12,7 +12,7 @@
 | `need` | Plain words the agent matches a shot's need against. |
 | `skill` | A folder name under `skills/`. It must exist. |
 | `workflow` | A file in that skill's `workflows/`, or `script:<file>` for a file in its `scripts/`, or `-` when the skill is instructions only. |
-| `inputs` | `role=node.input` pairs separated by `; `. One role may set several nodes, separated by `,`. Roles: `prompt image last_image video audio voice seed width height frames fps text lyrics tags seconds strength1 strength2 mask preset negative`. Graphs with `{{PLACEHOLDER}}` strings (motionfield, forkfield) take UPPERCASE job params (for example `"MOVES": "orbit-left"`) plus `workflows/<file>.defaults.json`. That sidecar can also set `fps` and `frame_rule: 4n+1` for Wan graphs. `direct.py` refuses to submit if any placeholder is left unfilled. A `-` workflow on a video row means it is a UI-format template only: export it to API and put the file name in the row. |
+| `inputs` | `role=node.input` pairs separated by `; `. One role may set several nodes, separated by `,`. Roles: `prompt image last_image video audio voice seed width height frames fps text lyrics tags seconds strength1 strength2 mask preset negative tracks`. Graphs with `{{PLACEHOLDER}}` strings (motionfield, forkfield) take UPPERCASE job params (for example `"MOVES": "orbit-left"`) plus `workflows/<file>.defaults.json`. That sidecar can also set `fps` and `frame_rule: 4n+1` for Wan graphs. `direct.py` refuses to submit if any placeholder is left unfilled. `api/<name>.api.json` files are the Comfy-Org UI templates converted to API format with ComfyUI's own frontend (`graphToPrompt`); see `references/ui-to-api.md` in google-colab-runner. A `-` workflow on a video row means no API graph exists yet. |
 | `requires` | The main open-weights models (for people; preflight decides whether they are actually available). |
 | `fallback` | The route id to try when preflight says this workflow isn't ready, or `-`. Chains are followed until a ready route is found, or the step is marked `blocked`. |
 | `tiers` | The tiers where this route is preferred: `draft`, `standard`, `max` (comma list) or `*`. |
@@ -73,20 +73,24 @@ To plug in a new skill: create `skills/<new>/`, then add **one row** here. If it
 | fix.relight_lights | still-fix | placed lights, match plate lighting | relighting | klein_relight_normals.api.json | prompt=4.text; image=10.image; seed=23.noise_seed | FLUX.2 Klein + Depth Anything 3 (license per file) | fix.relight | max |
 | control.pose | video | follow pose or blocking from a clip (previs or reference performance) | control-to-video | wan_vace_pose_control.api.json | prompt=4.text; video=6.video,40.video; width=6.custom_width,9.width; height=6.custom_height,9.height; frames=6.frame_load_cap,9.length; fps=6.force_rate,13.frame_rate; seed=10.seed | Wan 2.1 VACE 14B + DWPose ONNX | video.i2v | - |
 | control.canny | video | follow layout or edges from a clip | control-to-video | wan_vace_canny_control.api.json | prompt=4.text; video=6.video,40.video; width=6.custom_width,9.width; height=6.custom_height,9.height; frames=6.frame_load_cap,9.length; fps=6.force_rate,13.frame_rate; seed=10.seed | Wan 2.1 VACE 14B | control.pose | - |
-| control.ltx | video | depth, pose or canny control on LTX-2 / Wan 2.2 Fun Control (official templates) | control-to-video | - | - | UI templates ui/ltx2_*_to_video, ui/wan22_14b_fun_control: export API, then replace this row's workflow | control.pose | - |
+| control.ltx | video | pose control on LTX-2 (official Comfy-Org template, converted to API) | control-to-video | api/ltx2_pose_to_video.api.json | prompt=143:124.text; negative=143:119.text; image=160.image; video=185.file; seed=143:126.noise_seed; width=166.value; height=167.value; frames=168.value; fps=143:145.value | LTX-2 19B (Lightricks license, not OSI) | control.pose | - |
+| control.ltx_canny | video | canny edge control on LTX-2 (official template, converted to API) | control-to-video | api/ltx2_canny_to_video.api.json | prompt=143:124.text; negative=143:119.text; image=160.image; video=127.file; seed=143:126.noise_seed; width=166.value; height=167.value; frames=168.value; fps=143:145.value | LTX-2 19B (Lightricks license, not OSI) | control.canny | - |
+| control.ltx_depth | video | depth control on LTX-2 (official template, converted to API) | control-to-video | api/ltx2_depth_to_video.api.json | prompt=143:124.text; negative=143:119.text; image=160.image; video=183.file; seed=143:126.noise_seed; width=166.value; height=167.value; frames=168.value; fps=143:145.value | LTX-2 19B (Lightricks license, not OSI) | control.ltx | - |
 | camera.fun | video | exact named camera move from a still (dolly, orbit, crane, whip) | camera-control | wan_fun_camera_i2v.api.json | prompt=4.text; image=6.image; seed=7.seed,21.seed | Wan Fun Camera + CLIP vision | video.i2v | - |
-| camera.ati | video | drawn object or camera trajectories | camera-control | - | - | UI template ui/wan_ati_trajectory: export API first | camera.fun | - |
+| camera.ati | video | drawn object or camera trajectories (official template, converted to API; `params.tracks` = FL_PathAnimator paths_data JSON) | camera-control | api/wan_ati_trajectory.api.json | prompt=99:16.positive_prompt; image=58.image; seed=99:27.seed; width=110.value; height=111.value; tracks=89.paths_data | Wan 2.1 ATI (WanVideoWrapper) | camera.fun | - |
 | video.s2v | video | full-body talking or singing performance driven by audio | audio-driven-motion | wan22_s2v.api.json | prompt=4.text; audio=8.audio; image=10.image; width=11.width; height=11.height; frames=11.length; seed=12.seed; fps=14.frame_rate | Wan 2.2 S2V 14B | video.lipsync_wan | - |
 | video.talk_music | video | singer on a full music mix (vocal separation then InfiniteTalk) | audio-driven-motion | wan21_infinitetalk_vocal_sep.api.json | prompt=312.text; image=284.image; audio=125.audio; seed=128.seed | InfiniteTalk (Wan 2.1) + MelBand RoFormer | video.s2v | - |
-| video.a2v_ltx | video | LTX-2 audio-to-video, LTX-2.3 image+audio, HuMo | audio-driven-motion | - | - | UI templates: export API first | video.s2v | - |
+| video.a2v_ltx | video | LTX-2 audio-to-video from a still and a track (official template, converted to API) | audio-driven-motion | api/ltx2_audio_to_video.api.json | prompt=994:921.text; negative=994:922.text; image=444.image; audio=565.audio; seed=994:978:863.noise_seed; frames=994:855.length | LTX-2 19B (Lightricks license, not OSI) | video.s2v | - |
 | vfx.motion_ref | vfx | transfer motion from a reference clip onto a still (IC-LoRA) | ltx-iclora-utils | ltx23_ic_lora_motion.api.json | image=200.image; video=199.file; seed=704.seed | LTX-2.3 22B + motion IC-LoRA (Lightricks license) | vfx.motion | - |
 | vfx.effect_ltx | vfx | LTX-2.5 effect from a photo | ltx-iclora-utils | ltx25_effects.api.json | image=395.image; seed=338.noise_seed | LTX-2.5 (Lightricks license) | vfx.onetake | - |
-| post.clean_text | post | remove burned-in subtitles or watermark, restore archival, style transition, ID-LoRA | ltx-iclora-utils | - | - | UI templates: export API first (rights-cleared footage only) | - | - |
+| post.clean_text | post | remove burned-in subtitles (rights-cleared footage only; official template, converted to API) | ltx-iclora-utils | api/ltx23_remove_subtitles.api.json | video=5160.file; seed=5161:5078.noise_seed | LTX-2.3 22B + IC-LoRA (Lightricks license) | - | - |
+| post.clean_watermark | post | remove a platform watermark (rights-cleared footage only; converted template) | ltx-iclora-utils | api/ltx23_remove_watermark.api.json | video=5160.file; seed=5161:5078.noise_seed | LTX-2.3 22B + IC-LoRA (Lightricks license) | - | - |
 | vfx.recipe_read | vfx | read an effect off a reference clip into a JSON recipe | effect-recipe-read | forkfield_read_effect.api.json | image=1.image | Qwen3-VL 8B int8 | - | - |
 | vfx.recipe_apply | vfx | apply a read recipe to the user's photo | effect-recipe-read | forkfield_apply_open_ltx.api.json | image=1.image; seed=22.seed,54.noise_seed | Qwen-Image-Edit + LTX-2 (Lightricks license) | vfx.onetake | - |
 | qa.shot | qa | measured QC: freeze, black, cuts, flicker, soft, clipping (overrides VLM) | shot-qc | script:shot_qc.py | - | ffmpeg | - | * |
 | plan.previs | plan | prop or set previs mesh, blocking | image-to-3d | trellis2_image_to_3d.api.json | image=1.image | TRELLIS.2 + BiRefNet | - | max |
 | plan.connect | plan | submit, poll, fetch, cancel | comfyui-connect | script:comfy_client.py | - | none | - | * |
+| plan.google_colab | plan | run on Google Colab: package a notebook bundle, or drive a running Google Colab ComfyUI (CU estimate, spend gate, resume) | google-colab-runner | script:colab.py | - | Google Colab runtime (user account; compute units) | - | * |
 
 ## MORE_SKILLS.md
 `analysis/MORE_SKILLS.md` proposes 22 candidates, and 10 are now skills in this collection with rows above: video-upscale, frame-interpolation, reframe-aspect, video-inpaint-remove, lip-sync, character-swap-h3, shot-transitions, one-take-vfx, subtitles-captions and background-matte. The other 12 are not built yet. Each one plugs in as a single row at the stage below:
@@ -112,14 +116,15 @@ To plug in a new skill: create `skills/<new>/`, then add **one row** here. If it
 | Skill | Rows |
 |---|---|
 | lora-training | plan.lora |
-| control-to-video | control.pose, control.canny, control.ltx |
+| control-to-video | control.pose, control.canny, control.ltx, control.ltx_canny, control.ltx_depth |
 | camera-control | camera.fun, camera.ati |
 | audio-driven-motion | video.s2v, video.talk_music, video.a2v_ltx |
 | previs-control-passes | plan.previs_passes |
 | multi-gpu-dispatch | plan.dispatch |
 | relighting | fix.relight_lights |
 | shot-qc | qa.shot |
-| ltx-iclora-utils | vfx.motion_ref, vfx.effect_ltx, post.clean_text |
+| ltx-iclora-utils | vfx.motion_ref, vfx.effect_ltx, post.clean_text, post.clean_watermark |
 | effect-recipe-read | vfx.recipe_read, vfx.recipe_apply |
+| google-colab-runner | plan.google_colab |
 
 Pass-1 candidates now covered: previs-blocking-3d (`plan.previs_passes`), gpu-queue (`plan.dispatch`), lora-dataset (`plan.lora`) and camera-move-verify (`qa.shot`, measured motion and freezes).

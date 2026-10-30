@@ -9,6 +9,10 @@ rosesfield graphs partly follow Comfy-Org/workflow_templates (MIT, Copyright (c)
 Comfy-Org/workflow_templates files (skills/*/workflows/ui/*.ui.json) were fetched one by one from raw.githubusercontent.com at main = abb9cf6477b59c52dbe234c67f82318dadd872b2. The repository (4.7 GB) was not cloned.
 Bundled node packs keep their own LICENSE/NOTICE inside the folder. assets/motionfield_nodes/dwpose_onnx is Apache-2.0 (IDEA-Research DWPose); see licenses/jalajbhandula__motionfield__motionfield_nodes.NOTICE.
 
+skills/*/workflows/api/*.api.json are the workflows/ui/*.ui.json templates above converted to ComfyUI API format by ComfyUI's own frontend (app.graphToPrompt, ComfyUI b5a432157de6 with its bundled comfyui-frontend-package, GPL-3.0, used as a tool only; none of its code is copied). They stay under the template's licence: Comfy-Org/workflow_templates MIT (Copyright (c) 2023-present Comfy Org); robertvoy/ComfyUI-Distributed and komikndr/raylight templates Apache-2.0 (see licenses/).
+skills/google-colab-runner adapts design patterns (session estimate including setup and a collect-and-stop reserve, measured-rate notes, a wall-clock cap independent of metering, verified teardown) from Comfyrizz (MIT, Copyright (c) 2026 Kyle Durepos). No Comfyrizz code is copied. The notebook downloads cloudflared (Apache-2.0, Cloudflare) at run time; it is not bundled.
+skills/google-colab-runner/scripts/comfy_client.py is a copy of skills/comfyui-connect/scripts/comfy_client.py.
+
 ## Copied files
 
 - skills/flux3-klein-stills/workflows/flux3_klein_distilled_t2i.api.json

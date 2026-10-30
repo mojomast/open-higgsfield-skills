@@ -43,6 +43,7 @@
         "url": {"type": "string"},
         "gpu": {"type": "string"},
         "vram_gb": {"type": ["number", "null"]},
+        "colab": {"type": "object", "description": "Google Colab session state written by google-colab-runner: gpu, cu_per_hour, cu_cap, estimate, session_started_epoch, cu_spent_estimate, cu_spent_prior, drops, session_url. No credentials."},
         "budget": {
           "type": "object", "additionalProperties": false,
           "properties": {

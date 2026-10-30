@@ -26,7 +26,8 @@ Hard rules:
 | `references/manifest.schema.json` | schema of the production manifest (JSON Schema 2020-12 subset) |
 | `references/quality-playbook.md` | per-model prompting and graph rules (Klein, LTX, Qwen edit, audio), budget rules and license caveats |
 | `references/examples/*.manifest.json` + `.md` | worked examples: a 30 s story short (standard), a 15 s product spot (max) and a 20 s music-video snippet (draft) |
-| `scripts/direct.py` | optional stdlib-only driver: `routes`, `validate`, `tier`, `run [--dry-run]`, `approve` |
+| `scripts/direct.py` | optional stdlib-only driver: `routes`, `validate`, `tier`, `run [--dry-run] [--target google-colab]`, `approve`, `package --target google-colab` |
+| `../google-colab-runner/` | Google Colab packaging and orchestration (`references/google-colab.md` is the runbook) |
 
 ## 1. Intake: fill smart defaults and ask at most 3 questions
 Write `brief` into a new manifest. Fill the defaults below and record each one in `brief.defaults_used`, so the user can see what you assumed.
@@ -43,6 +44,21 @@ Write `brief` into a new manifest. Fill the defaults below and record each one i
 | deliverables | master + 9:16 | none |
 | commercial_use | false | it is a brand or product: **ask**, because of the license caveats |
 | target / budget | ask: local URL, Google Colab tunnel or Comfy Cloud; GPU-minutes or credits | **always**, if unknown |
+
+## Where to run: local, Google Colab or Comfy Cloud
+Decide this at intake (`target`), before preflight. Step by step:
+1. **Ask what the user has.** A local GPU and its VRAM, a Google Colab plan, or Comfy Cloud credits. Never assume a paid option.
+2. **Local** (`target.kind = local`) when a GPU with 16 GB+ is available: no per-minute cost, no session limits. Run `direct.py run m.json --url http://127.0.0.1:8188`.
+3. **Google Colab** (`target.kind = google_colab`) when there is no suitable local GPU and the user has Google Colab compute units:
+   1. `python skills/google-colab-runner/scripts/colab.py estimate m.json --gpu L4` (also T4 and A100). Show session minutes and compute units, and say that the rates are unverified.
+   2. Get a compute-unit cap into `target.budget.max_credits`, and the user's yes: `direct.py approve m.json spend`.
+   3. Choose the mode:
+      - **package** (the user runs everything in Google Colab; no tunnel): `direct.py package --target google-colab m.json`. Hand over the `.ipynb` (and the assets zip). Afterwards, `colab.py ingest m.json <outputs.zip>`, judge, then `direct.py run` locally for continuity onward.
+      - **orchestrate** (you drive it; full judge loop): the user runs the same notebook with `MODE = orchestrate` and pastes the tunnel URL. Then `direct.py run m.json --target google-colab --url <URL>`.
+   4. On exit 5 (session dropped), ask for a restart and the new URL, then re-run the same command. It resumes from the manifest and re-uploads finished assets.
+   5. At the end or at the cap, offer `colab.py teardown --url <URL>`, and remind the user that a connected runtime keeps billing.
+4. **Comfy Cloud** (`target.kind = comfy_cloud`) when the user already pays for it and every route's nodes exist there: `COMFY_API_KEY` from the user's environment, `direct.py run m.json --url <their Comfy Cloud API URL>`. The spend gate is human as on Google Colab.
+5. Whatever the target, run preflight first; it reads `/object_info` from that server and decides the tier.
 
 ## 2. Preflight and tier
 Run **comfyui-preflight** against every workflow the plan will use. It reads `/object_info` and the model lists only, and executes nothing. Store `target.preflight` (ready per route, missing nodes and weights). Then pick the tier. `direct.py tier` does this for you.
@@ -123,6 +139,8 @@ The manifest itself is the full record of prompts, seeds, models and costs.
   - `python3 scripts/direct.py validate m.json`
   - `python3 scripts/direct.py run m.json --dry-run` (prints every call; no network and no subprocess)
   - `python3 scripts/direct.py run m.json --url $COMFY_URL`
+  - `python3 scripts/direct.py package --target google-colab m.json` (Google Colab bundle)
+  - `python3 scripts/direct.py run m.json --target google-colab --url $TUNNEL_URL` (drive a Google Colab ComfyUI)
   - It exits with 3 at a human gate. Run `approve`, then re-run.
 - **Without it:** follow sections 1–9 by hand. Call each sibling skill's documented command, and update the manifest after **every** job (set the status to `done` with the outputs), so any agent can pick it up again.
 

@@ -2,7 +2,7 @@
 
 **One prompt in, a finished short video out, using only open-weights models on your own ComfyUI.**
 
-`open-higgsfield-skills` is an agent-agnostic pack of **36 [Agent Skills](https://agentskills.io)** that teaches any coding agent (Claude Code, Codex, Cursor, OpenCode, Hermes, Pi or your own) to work as a film crew. The `video-director` skill takes a one-line idea such as *"a lighthouse keeper finds a message in a bottle"* and breaks it into a story bible, a shot list, keyframes, video shots, voice, music, captions and a final cut. It sends every step to ComfyUI workflows built on **open weights**: FLUX Klein, LTX-2.x, Qwen-Image-Edit, Wan, SeedVR2, ACE-Step, Chatterbox, Whisper and more.
+`open-higgsfield-skills` is an agent-agnostic pack of **37 [Agent Skills](https://agentskills.io)** that teaches any coding agent (Claude Code, Codex, Cursor, OpenCode, Hermes, Pi or your own) to work as a film crew. The `video-director` skill takes a one-line idea such as *"a lighthouse keeper finds a message in a bottle"* and breaks it into a story bible, a shot list, keyframes, video shots, voice, music, captions and a final cut. It sends every step to ComfyUI workflows built on **open weights**: FLUX Klein, LTX-2.x, Qwen-Image-Edit, Wan, SeedVR2, ACE-Step, Chatterbox, Whisper and more.
 
 > **Status: early and community-built.** The workflows come from #OpenSourceHiggsfield hackathon projects and were checked statically (graph structure, node and weight requirements, routing and dry runs). They have **not** been run end to end on a GPU by this repo. See [Status and limitations](#status-and-limitations).
 
@@ -51,7 +51,7 @@ flowchart TD
     end
 ```
 
-Routing is data-driven: 65 routes today. [`skills/video-director/references/routing.md`](skills/video-director/references/routing.md) maps each *need* (for example "speaking on camera" or "remove object") to a skill, a workflow, its input bindings, a fallback route and the tiers it suits. To add a skill, you add one row.
+Routing is data-driven: 70 routes today. [`skills/video-director/references/routing.md`](skills/video-director/references/routing.md) maps each *need* (for example "speaking on camera" or "remove object") to a skill, a workflow, its input bindings, a fallback route and the tiers it suits. To add a skill, you add one row.
 
 ## Skills
 
@@ -72,6 +72,7 @@ Licence = the licence of the code and workflows in that folder. Model weights ar
 | [`film-assembly`](skills/film-assembly/) | Cut the final film with ffmpeg - normalise clips to one size/fps, join with cuts or crossfades (optionally snapped to music beats), lay narration over a ducked music bed, and export for 16:9, 9:16, 1:1 or 4:5 | ffmpeg | CPU | MIT · weights: none (ffmpeg) |
 | [`flux3-klein-stills`](skills/flux3-klein-stills/) | Generate stills and keyframes with open-weights FLUX Klein (distilled FLUX 3 Klein, FLUX 3 Klein base with prompt upsampling, or FLUX.2 Klein 4B/9B) through ComfyUI | FLUX 3 Klein, FLUX.2 Klein 4B/9B | ~12 GB int8/fp8; ~24 GB 9B bf16 (est.) | 0BSD, Apache-2.0, MIT · weights: FLUX 3 Klein: UNVERIFIED; FLUX.2 Klein 4B: Apache-2.0 (unverified); FLUX.2 Klein 9B: FLUX Non-Commercial (unverified) |
 | [`frame-interpolation`](skills/frame-interpolation/) | Raise a clip's frame rate (e.g. 24 to 48/60 fps, or smooth slow motion) with open-weights FILM frame interpolation in ComfyUI | FILM | low (~0.1 GB weights) | MIT · weights: FILM: Apache-2.0 (unverified) |
+| [`google-colab-runner`](skills/google-colab-runner/) | Run video-director on Google Colab: package a manifest into a self-contained Google Colab notebook bundle (ComfyUI and custom nodes at pinned commits, model downloads with your own HF token from Google Colab secrets, per-shot API workflows, GPU tier detection, outputs to Drive or a zip), or let the director drive a running Google Colab ComfyUI through a tunnel with a compute-unit estimate, spend gate, hard cap, resume after a dropped session and teardown | - (runs the routed skills) | T4 / L4 / A100 / H100 → draft / standard / max | MIT · weights: inherits the routed skills' licences |
 | [`image-edit`](skills/image-edit/) | Edit a still with open-weights Qwen-Image-Edit in ComfyUI - instruction edits, new camera angles, push-in, coverage close-ups, relighting, and outpainting to a new aspect | Qwen-Image-Edit 2509/2511, Lightning LoRA | 16-20 GB fp8 (est.) | MIT · weights: Qwen-Image / Edit: Apache-2.0 (unverified); Lightning LoRA: Apache-2.0 (unverified) |
 | [`image-to-3d`](skills/image-to-3d/) | Turn a still (or 4 views) into a GLB mesh with open-weights TRELLIS.2 or Pixal3D in ComfyUI | TRELLIS.2, Pixal3D | 16-24 GB (est.) | MIT · weights: TRELLIS.2: MIT (unverified); Pixal3D, MoGe-2: UNVERIFIED; DINOv3 licence (unverified) |
 | [`lip-sync`](skills/lip-sync/) | Make a character speak or sing to an audio track with open weights in ComfyUI - talking shot from a photo + audio (LTX-2.3), re-dub an existing video (LTX-2.3 IC-LoRA lipdub), or low-VRAM singing/talking (Wan 2.1 + InfiniteTalk) | LTX-2.3, Wan 2.1 InfiniteTalk | 24 GB+ (est.); Wan GGUF lower | MIT · weights: LTX-2 Community License (not OSI); Gemma Terms (unverified); Wan 2.1: Apache-2.0 (unverified); InfiniteTalk: UNVERIFIED; syncnet weights (research-only): excluded |
@@ -91,12 +92,12 @@ Licence = the licence of the code and workflows in that folder. Model weights ar
 | [`still-qa`](skills/still-qa/) | Judge loop for generated stills and video frames using an open-weights vision-language model (e.g. Qwen2.5-VL/Qwen3-VL via an OpenAI-compatible local server) - score prompt match, identity, artifacts, composition and style, then retry once with a concrete fix | Qwen2.5-VL / Qwen3-VL (your server) | VLM-dependent | MIT · weights: your chosen VLM (e.g. Qwen2.5-VL / Qwen3-VL: Apache-2.0, unverified) |
 | [`story-bible`](skills/story-bible/) | Write and maintain a story bible - logline, cast sheets with locked visual descriptors, locations, props, style/LUT, voice - that every prompt, shot and check reads from | LLM only | - | MIT · weights: none |
 | [`subtitles-captions`](skills/subtitles-captions/) | Make captions and subtitles - SRT/ASS from the shot plan's narration timing or from Whisper ASR (open weights, local ComfyUI node), then burn them in or ship a sidecar with ffmpeg | Whisper large-v3-turbo | ~1.6 GB | Apache-2.0, MIT · weights: Whisper large-v3-turbo: MIT (unverified) |
-| [`video-director`](skills/video-director/) | Top-level orchestrator that turns a one-line video idea into a finished short (story short, product spot, music-video snippet) on ComfyUI (local, Google Colab or Comfy Cloud) using only open-weights models. It does brief intake with defaults, a preflight and budget check that picks a draft, standard or max tier, then story bible and timed shot plan, stills first with a QA judge loop, image-to-video, continuity checks, voiceover, music and SFX, assembly with captions and exports, and a self-critique report. It keeps one resumable JSON manifest of every prompt, seed, model and cost | routes to the others (65 routes) | tier: 16 / 24 / 40 GB | MIT · weights: inherits the routed skills' licences |
+| [`video-director`](skills/video-director/) | Top-level orchestrator that turns a one-line video idea into a finished short (story short, product spot, music-video snippet) on ComfyUI (local, Google Colab or Comfy Cloud) using only open-weights models. It does brief intake with defaults, a preflight and budget check that picks a draft, standard or max tier, then story bible and timed shot plan, stills first with a QA judge loop, image-to-video, continuity checks, voiceover, music and SFX, assembly with captions and exports, and a self-critique report. It keeps one resumable JSON manifest of every prompt, seed, model and cost | routes to the others (70 routes) | tier: 16 / 24 / 40 GB | MIT · weights: inherits the routed skills' licences |
 | [`video-inpaint-remove`](skills/video-inpaint-remove/) | Remove or replace an object in a video using a mask, with open-weights Wan 2.1 VACE or LTX-2.3 in-painting in ComfyUI (tracked mask, feathering, original pixels kept outside the mask) | Wan 2.1 VACE, LTX-2.3, SAM 2 | 24 GB+ (est.) | MIT · weights: Wan 2.1 VACE: Apache-2.0 (unverified); LTX-2 Community License (not OSI); SAM 2: Apache-2.0 (unverified) |
 | [`video-upscale`](skills/video-upscale/) | Upscale and restore generated video or stills with open-weights SeedVR2 in ComfyUI (one-step diffusion restoration) | SeedVR2 3B/7B | 16-24 GB+ (est.) | MIT · weights: SeedVR2: Apache-2.0 per upstream repo (UNVERIFIED for these weights) |
 | [`voiceover`](skills/voiceover/) | Narration and voice-over with open-weights Chatterbox Multilingual TTS (23 languages, optional voice reference) in ComfyUI, following one-voice narration rules | Chatterbox Multilingual | ~6 GB (est.) | MIT · weights: Chatterbox: MIT (unverified) |
 
-> **Comfy-Org UI templates need exporting.** Files under `skills/*/workflows/ui/*.ui.json` are official Comfy-Org (and ComfyUI-Distributed / raylight) workflows in ComfyUI's **UI format**. `comfy_client.py` submits **API format** only. Open each one in ComfyUI and use *Workflow → Export (API)*, then save it next to it as `workflows/<name>.api.json` before routing to it. The `*.api.json` files in this repo are already in API format.
+> **Comfy-Org UI templates ship in both formats.** Files under `skills/*/workflows/ui/*.ui.json` are official Comfy-Org (and ComfyUI-Distributed / raylight) workflows in ComfyUI's UI format. Each one is also in `skills/*/workflows/api/<name>.api.json`, converted with ComfyUI's own frontend (`app.graphToPrompt` in a headless, CPU-only ComfyUI at a pinned commit) and validated against `/object_info`, so `comfy_client.py`, the director and the Google Colab runner submit them directly. 26 of 27 convert; `relighting/…/character_portrait_relighting` is excluded because it needs a closed hosted API node. Details: [`skills/google-colab-runner/references/ui-to-api.md`](skills/google-colab-runner/references/ui-to-api.md).
 
 ## Quick start
 
@@ -128,6 +129,29 @@ mkdir -p ~/.claude/skills && cp -r skills/* ~/.claude/skills/   # Claude Code
 ```
 
 Skill-folder locations follow each agent's documentation as of October 2026. Check your agent's docs if a path has changed.
+
+## Run on Google Colab
+
+No local GPU? `google-colab-runner` runs the same manifest on Google Colab. Nothing starts a session or spends compute units without you pressing Run, and your Hugging Face token stays in your own Google Colab secrets (`HF_TOKEN`).
+
+```bash
+# 1. estimate session minutes and compute units (rates are unverified placeholders)
+python3 skills/google-colab-runner/scripts/colab.py estimate m.json --gpu L4
+python3 skills/video-director/scripts/direct.py approve m.json spend
+
+# 2a. package mode: a notebook bundle you open in Google Colab and run end to end
+python3 skills/video-director/scripts/direct.py package --target google-colab m.json --out dist
+#     -> dist/<id>-google-colab/<id>.ipynb (+ .zip): ComfyUI and node packs at pinned commits,
+#        model downloads, per-shot API workflows for each tier, GPU tier detection (T4/L4/A100/H100),
+#        a watchdog (session cap, idle, teardown request) and outputs to Drive or a zip
+python3 skills/google-colab-runner/scripts/colab.py ingest m.json <id>-google-colab-outputs.zip
+
+# 2b. orchestrate mode: run the notebook with MODE=orchestrate, paste its tunnel URL here
+python3 skills/video-director/scripts/direct.py run m.json --target google-colab --url https://<name>.trycloudflare.com
+python3 skills/google-colab-runner/scripts/colab.py teardown --url https://<name>.trycloudflare.com
+```
+
+Orchestrate mode needs a compute-unit cap (`target.budget.max_credits` or `--max-cu`). It refuses an estimate over the cap, stops at the `spend` gate until you approve, checks the meter before every render, and offers teardown at the end. If the session drops (exit 5), restart the notebook and re-run the same command with the new URL: it resumes from the manifest and re-uploads finished assets. Use **local** when you have a 16 GB+ GPU and **Comfy Cloud** when you already pay for it. The full runbook is [`skills/google-colab-runner/references/google-colab.md`](skills/google-colab-runner/references/google-colab.md).
 
 ## Tiers
 
@@ -179,7 +203,7 @@ What happens on the story short: intake fills in the defaults (16:9, 24 fps, nar
 skills/<name>/
   SKILL.md                 # frontmatter: name, description; then instructions
   scripts/                 # stdlib-only Python (comfy_client.py, preflight.py, ...)
-  workflows/               # ComfyUI API-format JSON
+  workflows/               # ComfyUI API-format JSON (ui/ = Comfy-Org UI templates, api/ = their API conversions)
   references/              # requirements.md, upstream notes, presets
   assets/                  # bundled custom-node packs (own LICENSE inside)
 docs/SKILL_FORMAT.md       # the SKILL.md format used here
@@ -212,7 +236,8 @@ Be clear about what has and hasn't been checked:
 - Model-weight licences are mostly **unverified**. The LTX-2 weights use the Lightricks LTX-2 Community License, which is **not** OSI-approved. FLUX.2 Klein 9B is believed to be non-commercial. Check every model card before commercial use.
 - Agent-specific install paths come from each agent's docs. Hermes tap install and Pi project paths are untested.
 - ComfyUI node packs change quickly, so class names or inputs may drift. Run `comfyui-preflight` first.
-- The `ui/*.ui.json` templates must be exported to API format before the director can submit them, so routes that depend on them are not ready until you do.
+- The converted `workflows/api/*.api.json` graphs were validated statically against `/object_info` only; none has been executed, and the role-to-node bindings in their routing rows were read from the graphs by hand.
+- The Google Colab runner is **untested on a real Google Colab GPU**. It was tested against a stdlib mock ComfyUI only. Compute-unit rates and GPU speed factors are unverified placeholders, and 19 of 111 model files have no resolved download URL.
 - `lora-training` writes an ai-toolkit config and checks the dataset, but training itself has not been run here.
 
 ## Credits

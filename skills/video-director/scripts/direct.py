@@ -12,6 +12,8 @@ run resumes where it stopped. Steps whose status is "done" are skipped.
   python direct.py run manifest.json --dry-run         # print the full plan; NO network, NO subprocess
   python direct.py run manifest.json --url $COMFY_URL  # execute (resumable)
   python direct.py approve manifest.json plan          # pass a human gate (bible|plan|spend|final)
+  python direct.py package --target google-colab manifest.json         # Google Colab bundle + notebook
+  python direct.py run manifest.json --target google-colab --url $TUNNEL # drive a Google Colab ComfyUI
 
 Env: COMFY_URL, VLM_ENDPOINT, VLM_MODEL (judge). Nothing here calls a closed API.
 """
@@ -342,9 +344,13 @@ class Runner:
 
     def frame(s, video, where, out):
         args = ["-sseof", "-0.05"] if where == "last" else (["-ss", "50%"] if where == "mid" else [])
-        if where == "mid":
-            args = []  # mid frame via select filter below
-            cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", video, "-vf", "select='eq(n\\,floor(n_frames/2))'", "-frames:v", "1", out]
+        if where == "mid":  # seek to half the probed duration (the select filter has no n_frames constant)
+            half = "0"
+            if not s.dry:
+                pr = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(video)], capture_output=True, text=True)
+                try: half = f"{float(pr.stdout.strip()) / 2:.3f}"
+                except ValueError: pass
+            cmd = ["ffmpeg", "-y", "-loglevel", "error", "-ss", half, "-i", video, "-frames:v", "1", out]
         else:
             cmd = ["ffmpeg", "-y", "-loglevel", "error", *args, "-i", video, "-frames:v", "1", out]
         s.sh(cmd, f"frame {where} of {os.path.basename(str(video))}")
@@ -579,7 +585,9 @@ class Runner:
                 if e.get("method") == "reframe":
                     print(f"      (export {e['aspect']}: reframe route post.reframe per shot, then re-assemble)")
                 else:
-                    s.sh(cmd[:cmd.index("--aspect") + 1] + [e["aspect"]] + cmd[cmd.index("--aspect") + 2:-3] + ["--out", out.replace(".mp4", f"_{e['aspect'].replace(':', 'x')}.mp4"), "--run"], f"export {e['aspect']}")
+                    ec = list(cmd); ec[ec.index("--aspect") + 1] = e["aspect"]
+                    ec[ec.index("--out") + 1] = out.replace(".mp4", f"_{e['aspect'].replace(':', 'x')}.mp4")
+                    s.sh(ec, f"export {e['aspect']}")
         a["output"] = out
         return "done"
 
@@ -610,6 +618,13 @@ def main():
         sp.add_parser(c).add_argument("manifest")
     r = sp.add_parser("run"); r.add_argument("manifest"); r.add_argument("--url", default=os.environ.get("COMFY_URL", "http://127.0.0.1:8188"))
     r.add_argument("--dry-run", action="store_true")
+    r.add_argument("--target", choices=["comfyui", "google-colab"], default="comfyui",
+                   help="google-colab: drive a running Google Colab ComfyUI (CU estimate, spend gate, hard cap, resume)")
+    r.add_argument("--max-cu", type=float, help="google-colab: hard compute-unit cap (default target.budget.max_credits)")
+    r.add_argument("--teardown", choices=["offer", "on-cap", "auto"], default="offer")
+    pk = sp.add_parser("package", help="build a self-contained bundle for another runtime")
+    pk.add_argument("--target", choices=["google-colab"], required=True); pk.add_argument("manifest")
+    pk.add_argument("--out", default="dist"); pk.add_argument("--no-zip", action="store_true")
     r.add_argument("--only", default="", help="comma shot ids: worker mode for multi-gpu-dispatch (stills+video only)")
     ap = sp.add_parser("approve"); ap.add_argument("manifest"); ap.add_argument("gate", choices=["bible", "plan", "spend", "final"])
     a = p.parse_args()
@@ -618,6 +633,12 @@ def main():
         for rid, rr in routes.items():
             print(f"{rid:20} {rr['stage']:11} {rr['skill']:22} {rr['workflow']:45} -> {rr['fallback']}")
         errs = check_routes(routes); print("route errors:", errs or "none"); return 1 if errs else 0
+    if a.cmd == "package" or (a.cmd == "run" and a.target == "google-colab" and not a.dry_run):
+        sys.path.insert(0, os.path.join(SKILLS, "google-colab-runner", "scripts"))
+        import colab
+        if a.cmd == "package":
+            return colab.main(["package", a.manifest, "--out", a.out] + (["--no-zip"] if a.no_zip else []))
+        return colab.main(["orchestrate", a.manifest, "--url", a.url, "--teardown", a.teardown] + (["--max-cu", str(a.max_cu)] if a.max_cu is not None else []))
     m = json.load(open(a.manifest))
     if a.cmd == "validate":
         errs = validate(m, json.load(open(SCHEMA))) + rules(m, routes) + check_routes(routes)

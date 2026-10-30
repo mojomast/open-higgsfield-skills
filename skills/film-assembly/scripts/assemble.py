@@ -32,7 +32,7 @@ def build(a, durations):
     for i, c in enumerate(a.clips):
         inputs += ["-i", c]
         filt.append(f"[{i}:v]scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},"
-                    f"setsar=1,fps={a.fps},format=yuv420p,settb=AVTB,setpts=PTS-STARTPTS[v{i}]")
+                    f"setsar=1,settb=AVTB,setpts=PTS-STARTPTS,fps={a.fps},format=yuv420p[v{i}]")
     cur, t = "v0", durations[0]
     for i in range(1, len(a.clips)):
         cut = snap(t, beats)
