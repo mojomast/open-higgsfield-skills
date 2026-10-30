@@ -197,7 +197,7 @@ def rules(m, routes):
         for x in s.get("extra", []):
             if x["route"] not in routes: errs.append(f"{s['id']}.extra: unknown route {x['route']}")
     for k in ("voiceover", "music"):
-        if k in m["audio"] and m["audio"][k]["route"] not in routes: errs.append(f"audio.{k}: unknown route")
+        if isinstance(m["audio"].get(k), dict) and m["audio"][k].get("route") not in routes: errs.append(f"audio.{k}: unknown route")
     return errs
 
 

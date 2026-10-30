@@ -148,7 +148,8 @@ def fill(rid, values):
                     nid, _, inp = t.rpartition(".")
                     cur = wf[nid]["inputs"][inp]
                     wf[nid]["inputs"][inp] = fills[ph] if cur == "{{%s}}" % ph else cur.replace("{{%s}}" % ph, str(fills[ph]))
-        left = sorted(direct.placeholders(wf))
+        ftargets = {t for f in files for t in f["targets"]}  # filled with the uploaded name at run time
+        left = sorted(ph for ph, ts in direct.placeholders(wf).items() if not set(ts) <= ftargets)
         if left: return wf, files, left
     return wf, files, []
 
@@ -196,11 +197,18 @@ def build_jobs(m0, tier, mdir):
         still = add(f"{sid}_still", st["route"], {"prompt": st.get("prompt", ""), "seed": seed, "width": st["width"], "height": st["height"]}, "still", sid)
         img = f"job:{still}" if still else None
         if st.get("approved") and os.path.isfile(os.path.join(mdir, st["approved"])): img = st["approved"]
-        last = None
+        last = None; still_img = img
         if s.get("chain_from"):
             prev = f"job:{s['chain_from']}_video"
             if "last_image" in ROUTES.get(vd["route"], {}).get("inputs", {}): img, last = f"lastframe:{prev[4:]}", img
             else: img = f"lastframe:{prev[4:]}"
+        r_v = first_ready(vd["route"], set())
+        sc = direct.sidecar(ROUTES[r_v]) if r_v else {}
+        if sc.get("fps"):  # Wan-family graphs: own fps + 4n+1 frames (mirrors direct.py video_one)
+            step = 4 if sc.get("frame_rule") == "4n+1" else 8
+            vd["fps"] = sc["fps"]; vd["frames"] = step * math.ceil(s["duration_s"] * sc["fps"] / step) + 1
+        if sc.get("duration_placeholder"):
+            vd.setdefault("params", {}).setdefault(sc["duration_placeholder"], str(max(2, round(s["duration_s"]))))
         vseed = vd.get("seed") or 5000 + int(re.sub(r"\D", "", sid)[:2] or 0) * 11
         vals = {"image": img, "last_image": last, "prompt": vd.get("prompt", ""), "seed": vseed, "width": vd["width"],
                 "height": vd["height"], "frames": vd["frames"], "strength1": vd.get("strength1"), "strength2": vd.get("strength2"),
@@ -208,7 +216,8 @@ def build_jobs(m0, tier, mdir):
         vals.update(vd.get("params") or {})
         add(f"{sid}_video", vd["route"], vals, "video", sid)
         for i, x in enumerate(s.get("extra", [])):
-            add(f"{sid}_extra{i+1}", x["route"], {**x.get("params", {}), "video": f"job:{sid}_video"}, "extra", sid)
+            src = {"image": still_img} if ROUTES.get(x["route"], {}).get("stage") == "still-fix" and still_img else {"video": f"job:{sid}_video"}
+            add(f"{sid}_extra{i+1}", x["route"], {**x.get("params", {}), **src}, "extra", sid)
     au = m["audio"]
     if au.get("voiceover"):
         text = " ".join(x["narration"] for x in m["shots"] if x.get("narration"))

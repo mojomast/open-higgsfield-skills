@@ -89,7 +89,7 @@ For every shot, set `still.route` and `video.route` from `routing.md`. Extra pas
 | stylise footage / one-take effect | `vfx.restyle` / `vfx.onetake` |
 | join two shots smoothly | `transition.flf` (max) otherwise `transition.cut` |
 | motion or blocking must match a clip or previs | `control.pose` / `control.canny` (+ `job.params.video`), after `plan.previs_passes` |
-| an exact, named camera move | `camera.fun` (`params.MOVES`, for example `"orbit-left"`), or `camera.ati` for drawn paths |
+| an exact, named camera move | `camera.fun` (`params.MOVES`, for example `"arc-left-45"`; valid names are the keys of `MOVES` in camera-control/assets/motionfield_nodes/core/camera_trajectory.py), or `camera.ati` for drawn paths |
 | audio drives the whole performance | `video.s2v` (`params.audio`), or `video.talk_music` for a singer on a full mix |
 | copy an effect from a reference clip | `vfx.recipe_read` then `vfx.recipe_apply` |
 | motion from a reference clip onto a still | `vfx.motion_ref` |
