@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+*.log
+.DS_Store
+out/
+outputs/
+runs/
+# never commit model weights or renders
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.gguf
+*.onnx
+*.mp4
+*.mov
+*.wav
+*.mp3

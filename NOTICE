@@ -1,0 +1,256 @@
+NOTICE: open-higgsfield-skills
+
+Copyright (c) 2026 Kyle Durepos (mojomast). Original text and scripts: MIT (see LICENSE).
+Summary tables by skill: THIRD_PARTY_LICENSES.md.
+
+This collection bundles third-party files. Each copied file stays under its original license; full texts are in licenses/.
+Copied workflow JSON is re-serialised (indent=1) and otherwise unchanged. Copied Markdown has its YAML frontmatter removed and a one-line provenance comment added.
+rosesfield graphs partly follow Comfy-Org/workflow_templates (MIT, Copyright (c) 2023-present Comfy Org); see licenses/rossaai__rosesfield__workflows.NOTICE.
+
+## Copied files
+
+- skills/flux3-klein-stills/workflows/flux3_klein_t2i.api.json
+  from https://github.com/DashDashDesign/Kara/blob/1cd4dda7fbc5f052c4f432e2ebc2168938fa989e/workflows/flux3_klein_t2i.api.json
+  MIT, Copyright (c) 2026 Greg Stern
+- skills/flux3-klein-stills/workflows/flux3_klein_t2i_template.api.json
+  from https://github.com/Niutonian/Comfyui_Darius_OS/blob/6a3695141d05a5c9e8b39045d1b0e9cbe2f6bb98/workflows/canvas/flux3-klein-t2i-v1/template.api.json
+  0BSD, Copyright (c) 2026 Niutonian and Darius contributors
+- skills/flux3-klein-stills/workflows/flux2_klein_9b_t2i.api.json
+  from https://github.com/jtydhr88/ComfyArt/blob/13396a8c160cd7950ab7365393475973090b69c1/workflows/flux2-klein-9b-t2i.api.json
+  MIT, Copyright (c) 2026 Terry Jia
+- skills/flux3-klein-stills/workflows/flux2_klein_t2i_lean.api.json
+  from https://github.com/Editorenbici/leafreel/blob/3578904f500eafb3d38d110351420287bf23d2b2/leafreel/workflows/flux2_klein_t2i.api.json
+  Apache-2.0, Copyright (c) 2026 Patricio Bustos (Editorenbici) and LeafReel contributors
+- skills/ltx25-image-to-video/workflows/ltx25_i2v_two_pass.api.json
+  from https://github.com/Editorenbici/leafreel/blob/3578904f500eafb3d38d110351420287bf23d2b2/leafreel/workflows/ltx25_i2v.api.json
+  Apache-2.0, Copyright (c) 2026 Patricio Bustos (Editorenbici) and LeafReel contributors
+- skills/ltx25-image-to-video/workflows/ltx25_start_frame_i2v.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/video-ltx-2-5-start-frame/video-ltx-2-5-start-frame.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/ltx25-image-to-video/workflows/ltx25_t2v.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/video-ltx-2-5-text/video-ltx-2-5-text.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/image-edit/workflows/qwen_edit_2511_instruct.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/edit-qwen-image-edit-2511/edit-qwen-image-edit-2511.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/image-edit/workflows/qwen_edit_2511_angles.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/angles-qwen-image-edit-2511/angles-qwen-image-edit-2511.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/image-edit/workflows/qwen_edit_2509_relight.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/relight-qwen-image-edit-2509/relight-qwen-image-edit-2509.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/image-edit/workflows/qwen_image_outpaint_format.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/expand-format-qwen-image/expand-format-qwen-image.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/image-edit/workflows/qwen_edit_2509_angle_lightning.api.json
+  from https://github.com/wexloops/openfield/blob/96cf7c13b71456bfa28beaacc9dcca74ad829b9d/workflows/edit-angle.json
+  MIT, Copyright (c) 2026 David Wexler / Strangeloop Studios
+- skills/image-edit/workflows/qwen_edit_2509_pushin_lightning.api.json
+  from https://github.com/wexloops/openfield/blob/96cf7c13b71456bfa28beaacc9dcca74ad829b9d/workflows/edit-pushin.json
+  MIT, Copyright (c) 2026 David Wexler / Strangeloop Studios
+- skills/image-edit/workflows/qwen_edit_2509_coverage_lightning.api.json
+  from https://github.com/wexloops/openfield/blob/96cf7c13b71456bfa28beaacc9dcca74ad829b9d/workflows/edit-coverage.json
+  MIT, Copyright (c) 2026 David Wexler / Strangeloop Studios
+- skills/restyle/workflows/ltx_ic_lora_depth_restyle.api.json
+  from https://github.com/wexloops/openfield/blob/96cf7c13b71456bfa28beaacc9dcca74ad829b9d/workflows/mirror-restyle.json
+  MIT, Copyright (c) 2026 David Wexler / Strangeloop Studios
+- skills/restyle/workflows/ltx25_motion_guide.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/motion-guide-ltx-2-5/motion-guide-ltx-2-5.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/music-sfx/workflows/music_ace_step15.api.json
+  from https://github.com/jtydhr88/ComfyArt/blob/13396a8c160cd7950ab7365393475973090b69c1/workflows/music-ace-step15.api.json
+  MIT, Copyright (c) 2026 Terry Jia
+- skills/music-sfx/workflows/sfx_stable_audio_open.api.json
+  from https://github.com/jtydhr88/ComfyArt/blob/13396a8c160cd7950ab7365393475973090b69c1/workflows/sfx-stable-audio.api.json
+  MIT, Copyright (c) 2026 Terry Jia
+- skills/music-sfx/workflows/sfx_stable_audio_3.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/audio-sound-stable-audio-3/audio-sound-stable-audio-3.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/music-sfx/workflows/music_minimax_music3.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/audio-music-minimax-music-3/audio-music-minimax-music-3.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/music-sfx/references/fuobe-audio-prompt-rules.md
+  from https://github.com/workingprototype/Fuobe/blob/c307034fd37d94cd506fd6d69ba9a4b15e41b91d/skills/audio-generation/SKILL.md
+  MIT, Copyright (c) 2026 workingprototype and the Fuobe contributors
+- skills/voiceover/workflows/voice_chatterbox_multilingual.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/voice-chatterbox/voice-chatterbox.api.json
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/voiceover/references/fuobe-narration-rules.md
+  from https://github.com/workingprototype/Fuobe/blob/c307034fd37d94cd506fd6d69ba9a4b15e41b91d/skills/narration/SKILL.md
+  MIT, Copyright (c) 2026 workingprototype and the Fuobe contributors
+- skills/voiceover/references/rosesfield-voice-chatterbox-README.md
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/voice-chatterbox/README.md
+  MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors (graphs partly follow Comfy-Org/workflow_templates, Copyright (c) 2023-present Comfy Org, MIT)
+- skills/image-to-3d/workflows/trellis2_image_to_3d.api.json
+  from https://github.com/jtydhr88/ComfyArt/blob/13396a8c160cd7950ab7365393475973090b69c1/workflows/image-to-3d-trellis2.api.json
+  MIT, Copyright (c) 2026 Terry Jia
+- skills/image-to-3d/workflows/pixal3d_image_to_3d.api.json
+  from https://github.com/jtydhr88/ComfyArt/blob/13396a8c160cd7950ab7365393475973090b69c1/workflows/image-to-3d-pixal3d.api.json
+  MIT, Copyright (c) 2026 Terry Jia
+- skills/image-to-3d/workflows/pixal3d_multiview_to_3d.api.json
+  from https://github.com/jtydhr88/ComfyArt/blob/13396a8c160cd7950ab7365393475973090b69c1/workflows/image-to-3d-pixal3d-multiview.api.json
+  MIT, Copyright (c) 2026 Terry Jia
+- skills/camera-lens-lut/workflows/backlot_direct.api.json
+  from https://github.com/Trenchplanet/mogfield/blob/f151bc9edeb0fe9902f41b34f370103b0bca91c9/workflows/backlot_direct.json
+  MIT, Copyright (c) 2026 MOGFIELD contributors
+- skills/camera-lens-lut/assets/comfyui-backlot/
+  from https://github.com/Trenchplanet/mogfield/blob/f151bc9edeb0fe9902f41b34f370103b0bca91c9/nodes/comfyui-backlot/ (whole node pack; own LICENSE inside)
+  Apache-2.0 (node pack's own LICENSE), MOGFIELD contributors
+- skills/story-bible/references/fuobe-character-sheet.md
+  from https://github.com/workingprototype/Fuobe/blob/c307034fd37d94cd506fd6d69ba9a4b15e41b91d/skills/character-sheet/SKILL.md
+  MIT, Copyright (c) 2026 workingprototype and the Fuobe contributors
+- skills/story-bible/references/seriesmith-episode-script.md
+  from https://github.com/bgstratt/seriesmith/blob/389158629e89f7698ee42cc5ce665055956cf0f4/prompts/SKILL.md
+  MIT, Copyright (c) 2026 Brad (bgstratt)
+- skills/shot-planning/references/zerofield-crew-preproduction.md
+  from https://github.com/fagemx/ZeroField/blob/61fe3c212807288e4b5100559284bbed26886bdb/skills/crew-preproduction/SKILL.md
+  MIT, Copyright (c) 2026 ZeroField Contributors
+- skills/shot-planning/references/zerofield-shot-beats.md
+  from https://github.com/fagemx/ZeroField/blob/61fe3c212807288e4b5100559284bbed26886bdb/skills/shot-beats/SKILL.md
+  MIT, Copyright (c) 2026 ZeroField Contributors
+- skills/shot-planning/references/zerofield-previs-blocking.md
+  from https://github.com/fagemx/ZeroField/blob/61fe3c212807288e4b5100559284bbed26886bdb/skills/previs-blocking/SKILL.md
+  MIT, Copyright (c) 2026 ZeroField Contributors
+- skills/continuity-check/references/zerofield-continuity-check.md
+  from https://github.com/fagemx/ZeroField/blob/61fe3c212807288e4b5100559284bbed26886bdb/skills/continuity-check/SKILL.md
+  MIT, Copyright (c) 2026 ZeroField Contributors
+- skills/film-assembly/references/fuobe-video-repurposer.md
+  from https://github.com/workingprototype/Fuobe/blob/c307034fd37d94cd506fd6d69ba9a4b15e41b91d/skills/video-repurposer/SKILL.md
+  MIT, Copyright (c) 2026 workingprototype and the Fuobe contributors
+
+## Copied files (later skills)
+
+- skills/background-matte/workflows/birefnet_image_solid.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/background-removal-solid-color/background-removal-solid-color.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/background-matte/workflows/birefnet_image_transparent.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/background-removal-transparent/background-removal-transparent.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/background-matte/workflows/birefnet_video_background.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/video-edit-background-birefnet/video-edit-background-birefnet.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/background-matte/workflows/platelock_comp.api.json
+  from https://github.com/TusharTechs/platelock/blob/ae65b5295bea8ab4e4e26a4144d844b1039fa69e/workflows/platelock_comp_api.json
+  MIT, PlateLock contributors (@TusharTechs)
+- skills/background-matte/assets/comfyui-platelock/
+  from https://github.com/TusharTechs/platelock/blob/ae65b5295bea8ab4e4e26a4144d844b1039fa69e/comfyui-platelock/ (node pack; own LICENSE inside)
+  MIT, PlateLock contributors (@TusharTechs)
+- skills/character-swap-h3/workflows/h3_swap_face.api.json
+  from https://github.com/D3voz/openjutsu/blob/7fe118bb5a61fcfac0148e1bfea3dd29884dbf26/workflows/face.api.json
+  MIT, D3voz (@D3voz)
+- skills/character-swap-h3/workflows/h3_swap_object.api.json
+  from https://github.com/D3voz/openjutsu/blob/7fe118bb5a61fcfac0148e1bfea3dd29884dbf26/workflows/object.api.json
+  MIT, D3voz (@D3voz)
+- skills/character-swap-h3/workflows/h3_swap_simple.api.json
+  from https://github.com/D3voz/openjutsu/blob/7fe118bb5a61fcfac0148e1bfea3dd29884dbf26/workflows/simple.api.json
+  MIT, D3voz (@D3voz)
+- skills/character-swap-h3/workflows/ltx23_motion_swap_open_fallback.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/motion-swap-ltx-2-3/motion-swap-ltx-2-3.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/character-swap-h3/assets/comfyui-h3-oneclick-swap/
+  from https://github.com/D3voz/comfyui-h3-oneclick-swap/blob/e44a56e92920000e675d14be484aea0d7498d63e/(node pack; own LICENSE inside)
+  MIT, D3voz (@D3voz)
+- skills/flux3-klein-stills/workflows/flux3_klein_distilled_t2i.api.json
+  from https://github.com/jtydhr88/ComfyArt/blob/13396a8c160cd7950ab7365393475973090b69c1/workflows/flux3-klein-t2i.api.json
+  MIT, Terry Jia (@jtydhr88)
+- skills/frame-interpolation/workflows/film_frame_interpolation.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/video-edit-frame-rate-film/video-edit-frame-rate-film.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/frame-interpolation/references/rosesfield-frame-rate-film-README.md
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/video-edit-frame-rate-film/README.md
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/image-edit/workflows/qwen_edit_2511_angles_set.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/angles-set-qwen-image-edit-2511/angles-set-qwen-image-edit-2511.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/image-edit/workflows/qwen_edit_2511_layers_edit.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/layers-edit-qwen-image-edit-2511/layers-edit-qwen-image-edit-2511.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/image-edit/workflows/qwen_edit_2511_try_on.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/try-on-qwen-image-edit-2511/try-on-qwen-image-edit-2511.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/lip-sync/workflows/ltx23_ic_lora_lipdub_video.api.json
+  from https://github.com/apsolut/one-shot-multicam/blob/057ab701e4867b1ff44ef54571d5e98deec01c99/workflows/dub_api.json
+  MIT, Aleksandar Perisic (@apsolut)
+- skills/lip-sync/workflows/ltx23_lipsync_photo.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/lipsync-photo-ltx-2-3/lipsync-photo-ltx-2-3.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/lip-sync/references/rosesfield-lipsync-photo-README.md
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/lipsync-photo-ltx-2-3/README.md
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/lip-sync/workflows/wan21_infinitetalk_single.api.json
+  from https://github.com/A-Nobody4980/lip-service/blob/747cdb7511cf7535a81783c387b1acefc7924660/workflows/baseline_single_api.json
+  MIT, A. Nobody JLN (@A-Nobody4980)
+- skills/one-take-vfx/workflows/one_take_vfx.api.json
+  from https://github.com/Kainotomic/one-take-vfx/blob/c0f84b6d046964567e8a456a84c68dbf658d84ce/workflows/one_take_vfx_api.json
+  MIT, One-take VFX contributors (@Kainotomic)
+- skills/one-take-vfx/workflows/one_take_vfx_preset_node.api.json
+  from https://github.com/Kainotomic/one-take-vfx/blob/c0f84b6d046964567e8a456a84c68dbf658d84ce/workflows/one_take_vfx_preset_node_api.json
+  MIT, One-take VFX contributors (@Kainotomic)
+- skills/one-take-vfx/references/presets/*.json (12 files)
+  from https://github.com/Kainotomic/one-take-vfx/blob/c0f84b6d046964567e8a456a84c68dbf658d84ce/presets/
+  MIT, One-take VFX contributors (@Kainotomic)
+- skills/one-take-vfx/assets/onetake_vfx/
+  from https://github.com/Kainotomic/one-take-vfx/blob/c0f84b6d046964567e8a456a84c68dbf658d84ce/custom_nodes/onetake_vfx/ (LICENSE copied in)
+  MIT, One-take VFX contributors (@Kainotomic)
+- skills/reframe-aspect/workflows/ltx23_video_reframe.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/video-edit-reframe-ltx-2-3/video-edit-reframe-ltx-2-3.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/reframe-aspect/references/rosesfield-reframe-README.md
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/video-edit-reframe-ltx-2-3/README.md
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/shot-transitions/workflows/seam_describe_frames.api.json
+  from https://github.com/jdnichollsc/seam/blob/103d33ea48504f6f5be01dcd1ebaa9cead62e453/src/seam/workflows/describe.api.json
+  MIT, jdnichollsc (@jdnichollsc)
+- skills/shot-transitions/workflows/seam_ltx23_transition.api.json
+  from https://github.com/jdnichollsc/seam/blob/103d33ea48504f6f5be01dcd1ebaa9cead62e453/src/seam/workflows/l23_transition.api.json
+  MIT, jdnichollsc (@jdnichollsc)
+- skills/shot-transitions/workflows/seam_ltx25_flf2v_transition.api.json
+  from https://github.com/jdnichollsc/seam/blob/103d33ea48504f6f5be01dcd1ebaa9cead62e453/src/seam/workflows/l25_flf2v.api.json
+  MIT, jdnichollsc (@jdnichollsc)
+- skills/shot-transitions/references/seam-slots.json
+  from https://github.com/jdnichollsc/seam/blob/103d33ea48504f6f5be01dcd1ebaa9cead62e453/src/seam/workflows/slots.json
+  MIT, jdnichollsc (@jdnichollsc)
+- skills/shot-transitions/references/seam-presets.py.txt
+  from https://github.com/jdnichollsc/seam/blob/103d33ea48504f6f5be01dcd1ebaa9cead62e453/src/seam/presets.py
+  MIT, jdnichollsc (@jdnichollsc)
+- skills/subtitles-captions/assets/cj_whisper_asr/
+  from https://github.com/xk44/adrift/blob/9b6fbbde7c2869c205f85e5b79f9be5078a8effc/comfy_nodes/cj_whisper_asr/ (LICENSE copied in)
+  MIT, Adrift contributors (@xk44)
+- skills/subtitles-captions/scripts/captions.py
+  from https://github.com/hodgemann/mondo-music-video/blob/afa5f84cf77ec736034dcff9a7b52df978604ac4/mmv/captions.py
+  Apache-2.0 (upstream has no NOTICE file), @hodgemann
+- skills/video-inpaint-remove/workflows/ltx23_inpaint_remove.api.json
+  from https://github.com/satianurag/openframe/blob/22e27b19bde095d894a9d61e3a2668299ff1b778/workflows/ltx-23-inpaint.api.json
+  MIT, OpenFrame contributors (@satianurag)
+- skills/video-inpaint-remove/workflows/wan_vace_inpaint_remove.api.json
+  from https://github.com/satianurag/openframe/blob/22e27b19bde095d894a9d61e3a2668299ff1b778/workflows/wan-vace-inpaint.api.json
+  MIT, OpenFrame contributors (@satianurag)
+- skills/video-inpaint-remove/assets/openframe-nodes/
+  from https://github.com/satianurag/openframe/blob/22e27b19bde095d894a9d61e3a2668299ff1b778/custom_nodes/openframe/ (LICENSE copied in)
+  MIT, OpenFrame contributors (@satianurag)
+- skills/video-upscale/workflows/seedvr2_image_upscale.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/upscale-image-seedvr2/upscale-image-seedvr2.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/video-upscale/workflows/seedvr2_video_upscale.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/upscale-video-seedvr2/upscale-video-seedvr2.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+- skills/voiceover/workflows/voice_change_chatterbox.api.json
+  from https://github.com/rossaai/rosesfield/blob/8dfb486183ef892cde322cc3fbc26a22b998dca1/workflows/audio-voice-change-chatterbox/audio-voice-change-chatterbox.api.json
+  MIT, ROSSA AI, LLC and Rosesfield contributors (@rossaai); graphs partly follow Comfy-Org/workflow_templates (MIT, Comfy Org)
+
+## Original to this repo
+- skills/subtitles-captions/workflows/whisper_asr_segments.api.json (a minimal graph for the CJWhisperASR node), skills/video-director/, skills/still-qa/, every references/requirements.md, and every comfy_client.py / preflight.py / make_srt.py / assemble.py / direct.py / judge.py: MIT, Copyright (c) 2026 Kyle Durepos (mojomast).
+
+## Adapted (re-implemented in Python, not copied)
+- skills/comfyui-connect/scripts/comfy_client.py (and its copies in other skills): the wait and cancel semantics follow jalajbhandula/motionfield packages/mcp/src/tools/core/job_wait.mts and job_cancel.mts (MIT, Copyright (c) 2026 Jalaj Bhandula).
+- skills/comfyui-preflight/scripts/preflight.py (and its copies): the node and weight check follows rossaai/rosesfield scripts/checks/cloud-graphs/check-cloud-graphs.ts (MIT, Copyright (c) 2026 ROSSA AI, LLC and Rosesfield contributors).
+- skills/film-assembly/scripts/assemble.py: the beat-snapped cuts and scale/crop/xfade chain follow jalajbhandula/motionfield src/lib/generation/recipes/beat-cut.ts (MIT, Copyright (c) 2026 Jalaj Bhandula).
+- skills/shot-planning and skills/continuity-check SKILL.md: the method summarises fagemx/ZeroField skills (MIT, Copyright (c) 2026 ZeroField Contributors).
+- skills/music-sfx and skills/voiceover SKILL.md: the prompt and narration rules are condensed from workingprototype/Fuobe skills (MIT, Copyright (c) 2026 workingprototype and the Fuobe contributors).
+
+## Data lookups used at build time (not bundled)
+- ComfyUI core class names from comfyanonymous/ComfyUI @b5a432157de6 (GPL-3.0). Only the names are used; no code is copied.
+- Node-pack mapping from ltdrdata/ComfyUI-Manager extension-node-map.json.
+
+## Reference only (studied, nothing copied)
+- baney75/hildegard (AGPL-3.0): its anti-slop catalogue and generate-critique-revise loop informed which failure categories the still-qa checklist covers. The checklist wording is original.
