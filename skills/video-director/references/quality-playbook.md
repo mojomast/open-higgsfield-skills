@@ -24,6 +24,15 @@ These are per-model prompting and graph rules that video-director applies. The s
 - VAE decode tiling is 512/64/64/16 by default. openfield's 768/64/4096/32 gives fewer seams but uses more VRAM, so it is max tier only.
 - **License:** the LTX-2 weights are under the **Lightricks LTX-2 Community License**. That is **not an OSI-approved open-source license**: it has use and revenue conditions. Read `licenses/LTX-2-weights-LICENSE.reference.txt` before any commercial use. The graphs themselves are MIT/Apache.
 
+## Wan-family graphs (`control.*`, `camera.fun`, `video.s2v`, `video.talk_music`)
+- Use **16 fps** and **4n+1** frames (motionfield's catalog: `CAM_FRAMES = 16·duration + 1`). The camera rig renders at 832×480 for 16:9, 480×832 for 9:16 and 624×624 for 1:1. These come from the `workflows/*.defaults.json` sidecars, and `direct.py` applies them instead of the LTX rule.
+- Every `{{PLACEHOLDER}}` has to be filled. `direct.py` refuses to submit if one is missing.
+- Pose and canny control carry no identity, so feed the approved still as well. Use named camera moves (`MOVES`) from the catalog. Never invent names.
+- The Wan 2.1, 2.2 and VACE weights are Apache-2.0 (unverified per file).
+
+## Measurements (`qa.shot`)
+Run shot-qc on every render. A freeze (at least 0.5 s, unless the shot is static) or black frames fail the attempt. When the VLM says a camera is "locked off" and shot-qc measured motion, trust the measurement (the agentY rule).
+
 ## Edits and fixes
 - **Qwen-Image-Edit (`fix.edit`, `fix.tryon`, `fix.angle`, `fix.relight`, `fix.outpaint`):** write one instruction per pass, phrased as an imperative about the change only ("Replace the jacket with a red raincoat; keep face, pose, lighting"). Chain passes rather than stacking instructions. `fix.edit_fast` (Lightning LoRA, few steps) is for draft tier only.
 - **still-qa judge:** a still passes when the mean is at least `caps.pass_mean` and the minimum is at least `caps.pass_min`. Issue tags drive the fix: identity goes to edit with the reference, composition goes to a re-prompt, and artifacts go to seed+1.

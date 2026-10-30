@@ -101,7 +101,7 @@ Licenses are from public knowledge of the model family. Confirm each one on its 
 | file | license |
 |---|---|
 | Qwen-Image-Edit-2509-Lightning-8steps-V1.0-bf16.safetensors | lightx2v Lightning LoRA: Apache-2.0 (unverified) |
-| depth_anything_v2_vits.pth | Depth Anything V2 Small: Apache-2.0 (unverified) |
+| depth_anything_v2_vits.pth | Depth Anything: license varies by size (V2-Small Apache-2.0; larger V2/V3 checkpoints CC-BY-NC-4.0) - UNVERIFIED for this file |
 | gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors | Lightricks LTX-2 license (NOT an OSI-approved open-source license; open weights with use restrictions - read it; copy at RahmelJackson/frameforge-studio workflows/native/LTX-LICENSE.txt) |
 | ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors | Lightricks LTX-2 license (NOT an OSI-approved open-source license; open weights with use restrictions - read it; copy at RahmelJackson/frameforge-studio workflows/native/LTX-LICENSE.txt) |
 | ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors | Lightricks LTX-2 license (NOT an OSI-approved open-source license; open weights with use restrictions - read it; copy at RahmelJackson/frameforge-studio workflows/native/LTX-LICENSE.txt) |

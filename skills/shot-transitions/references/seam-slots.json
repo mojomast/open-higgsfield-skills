@@ -1,5 +1,3 @@
-<!-- Copied from jdnichollsc/seam src/seam/workflows/slots.json (MIT); vendor frontmatter removed. Rows naming closed/hosted models do not apply: use open-weights options only. -->
-
 {
   "_doc": "Named parameters -> [node_id, input] per API workflow. Generated from graph tracing on 2026-10-17. Runtime injection only through these maps. 'describe' is not a video model: it reads one shot (Gemma-4 E2B) for the prompt templates.",
   "l23": {

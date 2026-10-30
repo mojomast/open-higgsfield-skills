@@ -26,4 +26,4 @@ Licenses are from public knowledge of the model family. Confirm each one on its 
 ### workflows/backlot_direct.api.json
 | file | license |
 |---|---|
-| depth_anything_v2_vitl.pth | UNVERIFIED |
+| depth_anything_v2_vitl.pth | Depth Anything: license varies by size (V2-Small Apache-2.0; larger V2/V3 checkpoints CC-BY-NC-4.0) - UNVERIFIED for this file |

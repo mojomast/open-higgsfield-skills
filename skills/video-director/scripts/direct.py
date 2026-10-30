@@ -67,6 +67,26 @@ def load_routes(path=ROUTING):
     return routes
 
 
+PH = re.compile(r"\{\{([A-Z_]+)\}\}")
+
+
+def sidecar(r):
+    """Optional workflows/<file>.defaults.json: {"placeholders": {...}, "fps": 16, "frame_rule": "4n+1", "duration_placeholder": "DURATION"}."""
+    if r["workflow"] in ("-",) or r["workflow"].startswith("script:"): return {}
+    p = os.path.join(SKILLS, r["skill"], "workflows", r["workflow"].replace(".api.json", ".defaults.json"))
+    return json.load(open(p)) if os.path.isfile(p) else {}
+
+
+def placeholders(wf):
+    loc = {}
+    for nid, n in wf.items():
+        if isinstance(n, dict):
+            for k, v in n.get("inputs", {}).items():
+                if isinstance(v, str):
+                    for ph in PH.findall(v): loc.setdefault(ph, []).append(f"{nid}.{k}")
+    return loc
+
+
 def check_routes(routes):
     errs = []
     for rid, r in routes.items():
@@ -99,7 +119,9 @@ def resolve(routes, rid, m):
     seen = []
     while rid and rid != "-" and rid not in seen:
         seen.append(rid)
-        if ready.get(rid, True):
+        r = routes.get(rid, {})
+        ui_only = r.get("workflow") == "-" and r.get("stage") in ("still", "still-fix", "video", "video-fix", "vfx", "post", "transition")
+        if ready.get(rid, True) and not ui_only:
             return rid, seen
         rid = routes[rid]["fallback"]
     return None, seen
@@ -160,8 +182,13 @@ def rules(m, routes):
         for part in ("still", "video"):
             j = s[part]
             if j["route"] not in routes: errs.append(f"{s['id']}.{part}: unknown route {j['route']}")
+            elif part == "video":
+                need = [r for r in ("video", "audio") if r in routes[j["route"]]["inputs"] and r != "image"
+                        and not (r == "audio" and j["route"].startswith("video.lipsync"))]
+                miss = [r for r in need if not (j.get("params") or {}).get(r)]
+                if miss: errs.append(f"{s['id']}.video: route {j['route']} needs params {miss} (control clip / audio stem)")
         v = s["video"]
-        if routes.get(v["route"], {}).get("skill") in ("ltx25-image-to-video", "lip-sync", "one-take-vfx", "shot-transitions"):
+        if routes.get(v["route"], {}).get("skill") in ("ltx25-image-to-video", "lip-sync", "one-take-vfx", "shot-transitions", "ltx-iclora-utils") and not sidecar(routes[v["route"]]):
             if "frames" in v and (v["frames"] - 1) % 8: errs.append(f"{s['id']}: frames {v['frames']} not 8n+1")
             for k in ("width", "height"):
                 if k in v and v[k] % 32: errs.append(f"{s['id']}: {k} {v[k]} not a multiple of 32")
@@ -227,8 +254,9 @@ def pick_tier(m):
 
 # ---------------------------------------------------------------- execution
 class Runner:
-    def __init__(s, path, url, dry, routes):
+    def __init__(s, path, url, dry, routes, only=None):
         s.path, s.url, s.dry, s.routes = path, url, dry, routes
+        s.only = set(only or [])  # worker mode (multi-gpu-dispatch): stills+video for these shots only
         s.m = json.load(open(path)); s.step = 0
         s.work = os.path.join(os.path.dirname(os.path.abspath(path)), s.m["id"])
 
@@ -274,6 +302,20 @@ class Runner:
             for t in r["inputs"][role]:
                 sets += ["--set", f"{t}={json.dumps(val) if not isinstance(val, str) else val}"]
         wf = os.path.join(SKILLS, r["skill"], "workflows", r["workflow"])
+        loc = placeholders(json.load(open(wf)))
+        if loc:  # {{PLACEHOLDER}} graphs (motionfield, forkfield): sidecar defaults, then UPPERCASE params, must cover all
+            sc = sidecar(r); fill = dict(sc.get("placeholders", {}))
+            fill.update({k: v for k, v in values.items() if k.isupper() and v is not None})
+            done = {x.split("=", 1)[0] for x in sets[1::2]}
+            for ph, ts in loc.items():
+                if ph in fill:
+                    for tg in ts:
+                        if tg not in done: sets += ["--set", f"{tg}={json.dumps(fill[ph]) if not isinstance(fill[ph], str) else fill[ph]}"]; done.add(tg)
+            left = sorted(ph for ph, ts in loc.items() if any(tg not in done for tg in ts))
+            if left:
+                s.log("unfilled_placeholders", {"route": rid, "left": left})
+                if not s.dry: raise RuntimeError(f"{rid}: unfilled placeholders {left} - add them to the sidecar or job params")
+                print(f"      ! dry-run: unfilled placeholders {left}")
         t0 = time.time()
         res = s.sh(s.client(r["skill"]) + ["run", wf, "--out", out, *sets], label)
         s.m["cost"]["renders"] += 1
@@ -287,6 +329,11 @@ class Runner:
         if bible: cmd += ["--bible", bible]
         if ref: cmd += ["--ref", ref]
         return s.sh(cmd, f"judge {os.path.basename(str(image))}")
+
+    def qc(s, video, sh):
+        cmd = [sys.executable, os.path.join(SKILLS, "shot-qc", "scripts", "shot_qc.py"), video, "--duration", str(sh["duration_s"]), "--json"]
+        if re.search(r"static|locked|tripod", sh.get("camera", ""), re.I): cmd.append("--static")
+        return s.sh(cmd, f"shot-qc {sh['id']}")
 
     def passed(s, j):
         caps = s.m["caps"]; sc = j.get("scores") or {}
@@ -348,6 +395,11 @@ class Runner:
                 if not s.gate(g): return 3
                 st[stage] = "done"
         if not s.gate("spend"): return 3
+        if s.only:  # worker mode: no stage-level status writes; the coordinator run does continuity onward
+            for stage, fn in (("stills", s.stills), ("video", s.videos)):
+                print(f"-- worker stage: {stage} {sorted(s.only)}"); r = fn() or "done"; s.save()
+                if r != "done": print(f"worker stopped at {stage}: {r}"); return 4
+            return 0
         for stage, fn in (("stills", s.stills), ("video", s.videos), ("continuity", s.continuity), ("audio", s.audio),
                           ("post", s.post), ("assembly", s.assemble), ("critique", s.critique)):
             if st.get(stage) == "done":
@@ -365,7 +417,7 @@ class Runner:
         caps, out = s.m["caps"], os.path.join(s.work, "stills"); blocked = False
         for sh in s.m["shots"]:
             j = sh["still"]
-            if j["status"] == "done": continue
+            if j["status"] == "done" or (s.only and sh["id"] not in s.only): continue
             rid, chain = resolve(s.routes, j["route"], s.m)
             if not rid: j["status"] = "blocked"; s.log("no_route", {"shot": sh["id"], "tried": chain}); blocked = True; continue
             j.setdefault("attempts", []); prompt = j.get("prompt", ""); seed = j.get("seed") or 1000 + int(sh["id"][1:3]) * 7
@@ -398,6 +450,12 @@ class Runner:
         j = sh["video"]; caps = s.m["caps"]; out = os.path.join(s.work, "video")
         rid, chain = resolve(s.routes, j["route"], s.m)
         if not rid: j["status"] = "blocked"; return False
+        sc = sidecar(s.routes[rid])
+        if sc.get("fps"):  # Wan-family graphs: own fps + 4n+1 frame lattice instead of the LTX 8n+1 default
+            step = 4 if sc.get("frame_rule") == "4n+1" else 8
+            j["fps"] = sc["fps"]; j["frames"] = step * math.ceil(sh["duration_s"] * sc["fps"] / step) + 1
+        if sc.get("duration_placeholder"):
+            j.setdefault("params", {}).setdefault(sc["duration_placeholder"], str(max(2, round(sh["duration_s"]))))
         prev = next((x for x in s.m["shots"] if x["id"] == sh.get("chain_from")), None)
         start_img, last = sh["still"].get("approved"), None
         if prev and prev["video"].get("approved"):
@@ -414,11 +472,14 @@ class Runner:
             vals = {"image": start_img, "last_image": last, "prompt": j.get("prompt", ""), "seed": seed,
                     "width": j["width"], "height": j["height"], "frames": j["frames"],
                     "strength1": j.get("strength1"), "strength2": j.get("strength2"), "fps": j.get("fps"),
-                    "audio": (sh.get("extra") or [{}])[0].get("params", {}).get("audio") if rid.startswith("video.lipsync") else None}
+                    "audio": (sh.get("extra") or [{}])[0].get("params", {}).get("audio") if rid.startswith("video.lipsync") else None,
+                    "negative": ""}
+            vals.update(j.get("params") or {})  # e.g. {"video": control clip, "audio": stem} for control/audio-driven routes
             f = s.render(rid, vals, f"video {sh['id']} #{n} ({rid}) [{why}]", out)
+            q = s.qc(f, sh)  # shot-qc measurements: freeze/black = failed attempt (numbers beat the VLM)
             frames = [s.frame(f, w, f"{f}.{w}.png") for w in ("first", "mid", "last")]
             verdicts = [s.judge(fr, j.get("prompt", ""), sh["still"].get("approved")) for fr in frames]
-            ok = all(s.passed(v) for v in verdicts)
+            ok = all(s.passed(v) for v in verdicts) and q.get("pass", True)
             j["attempts"].append({"n": n, "route": rid, "seed": seed, "prompt": j.get("prompt", ""), "file": f,
                                   "verdict": "pass" if ok else "retry", "fix": next((v.get("fix") for v in verdicts if v.get("fix")), None)})
             s.save()
@@ -431,6 +492,7 @@ class Runner:
     def videos(s):
         bad = False
         for sh in s.m["shots"]:
+            if s.only and sh["id"] not in s.only: continue
             if sh["video"]["status"] != "done":
                 bad |= not s.video_one(sh, "first pass")
             for x in sh.get("extra", []):
@@ -548,6 +610,7 @@ def main():
         sp.add_parser(c).add_argument("manifest")
     r = sp.add_parser("run"); r.add_argument("manifest"); r.add_argument("--url", default=os.environ.get("COMFY_URL", "http://127.0.0.1:8188"))
     r.add_argument("--dry-run", action="store_true")
+    r.add_argument("--only", default="", help="comma shot ids: worker mode for multi-gpu-dispatch (stills+video only)")
     ap = sp.add_parser("approve"); ap.add_argument("manifest"); ap.add_argument("gate", choices=["bible", "plan", "spend", "final"])
     a = p.parse_args()
     routes = load_routes()
@@ -563,7 +626,7 @@ def main():
         t, why = pick_tier(m); print(json.dumps({"tier": t, "reason": why, "estimates": {k: estimate(m, k) for k in ORDER}})); return 0
     if a.cmd == "approve":
         m["gates"][a.gate] = "approved"; json.dump(m, open(a.manifest, "w"), indent=1); print(f"gate {a.gate} approved"); return 0
-    return Runner(a.manifest, a.url, a.dry_run, routes).run()
+    return Runner(a.manifest, a.url, a.dry_run, routes, [x for x in a.only.split(",") if x]).run()
 
 
 if __name__ == "__main__":

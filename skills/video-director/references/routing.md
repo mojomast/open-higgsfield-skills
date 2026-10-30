@@ -12,7 +12,7 @@
 | `need` | Plain words the agent matches a shot's need against. |
 | `skill` | A folder name under `skills/`. It must exist. |
 | `workflow` | A file in that skill's `workflows/`, or `script:<file>` for a file in its `scripts/`, or `-` when the skill is instructions only. |
-| `inputs` | `role=node.input` pairs separated by `; `. One role may set several nodes, separated by `,`. Roles: `prompt image last_image video audio voice seed width height frames fps text lyrics tags seconds strength1 strength2 mask preset`. |
+| `inputs` | `role=node.input` pairs separated by `; `. One role may set several nodes, separated by `,`. Roles: `prompt image last_image video audio voice seed width height frames fps text lyrics tags seconds strength1 strength2 mask preset negative`. Graphs with `{{PLACEHOLDER}}` strings (motionfield, forkfield) take UPPERCASE job params (for example `"MOVES": "orbit-left"`) plus `workflows/<file>.defaults.json`. That sidecar can also set `fps` and `frame_rule: 4n+1` for Wan graphs. `direct.py` refuses to submit if any placeholder is left unfilled. A `-` workflow on a video row means it is a UI-format template only: export it to API and put the file name in the row. |
 | `requires` | The main open-weights models (for people; preflight decides whether they are actually available). |
 | `fallback` | The route id to try when preflight says this workflow isn't ready, or `-`. Chains are followed until a ready route is found, or the step is marked `blocked`. |
 | `tiers` | The tiers where this route is preferred: `draft`, `standard`, `max` (comma list) or `*`. |
@@ -67,6 +67,24 @@ To plug in a new skill: create `skills/<new>/`, then add **one row** here. If it
 | post.grade | post | LUT, lens, camera shake, letterbox | camera-lens-lut | backlot_direct.api.json | video=1.file | none (post nodes) | - | standard,max |
 | post.captions | post | captions, subtitles | subtitles-captions | script:make_srt.py | - | none (ASR optional) | - | * |
 | assembly.cut | assembly | final edit, audio mix, export | film-assembly | script:assemble.py | - | ffmpeg | - | * |
+| plan.lora | plan | recurring identity, product or style needs a LoRA (human dataset gate) | lora-training | script:dataset_check.py | - | ai-toolkit (external) + open base model | - | - |
+| plan.previs_passes | plan | 3D blocking to OpenPose, depth and camera passes | previs-control-passes | script:binding_apply.py | - | Motion Previs Studio app (external, WebGL) | plan.previs | - |
+| plan.dispatch | plan | spread shots over several GPUs or servers | multi-gpu-dispatch | script:dispatch.py | - | none (ComfyUI-Distributed or raylight optional) | - | - |
+| fix.relight_lights | still-fix | placed lights, match plate lighting | relighting | klein_relight_normals.api.json | prompt=4.text; image=10.image; seed=23.noise_seed | FLUX.2 Klein + Depth Anything 3 (license per file) | fix.relight | max |
+| control.pose | video | follow pose or blocking from a clip (previs or reference performance) | control-to-video | wan_vace_pose_control.api.json | prompt=4.text; video=6.video,40.video; width=6.custom_width,9.width; height=6.custom_height,9.height; frames=6.frame_load_cap,9.length; fps=6.force_rate,13.frame_rate; seed=10.seed | Wan 2.1 VACE 14B + DWPose ONNX | video.i2v | - |
+| control.canny | video | follow layout or edges from a clip | control-to-video | wan_vace_canny_control.api.json | prompt=4.text; video=6.video,40.video; width=6.custom_width,9.width; height=6.custom_height,9.height; frames=6.frame_load_cap,9.length; fps=6.force_rate,13.frame_rate; seed=10.seed | Wan 2.1 VACE 14B | control.pose | - |
+| control.ltx | video | depth, pose or canny control on LTX-2 / Wan 2.2 Fun Control (official templates) | control-to-video | - | - | UI templates ui/ltx2_*_to_video, ui/wan22_14b_fun_control: export API, then replace this row's workflow | control.pose | - |
+| camera.fun | video | exact named camera move from a still (dolly, orbit, crane, whip) | camera-control | wan_fun_camera_i2v.api.json | prompt=4.text; image=6.image; seed=7.seed,21.seed | Wan Fun Camera + CLIP vision | video.i2v | - |
+| camera.ati | video | drawn object or camera trajectories | camera-control | - | - | UI template ui/wan_ati_trajectory: export API first | camera.fun | - |
+| video.s2v | video | full-body talking or singing performance driven by audio | audio-driven-motion | wan22_s2v.api.json | prompt=4.text; audio=8.audio; image=10.image; width=11.width; height=11.height; frames=11.length; seed=12.seed; fps=14.frame_rate | Wan 2.2 S2V 14B | video.lipsync_wan | - |
+| video.talk_music | video | singer on a full music mix (vocal separation then InfiniteTalk) | audio-driven-motion | wan21_infinitetalk_vocal_sep.api.json | prompt=312.text; image=284.image; audio=125.audio; seed=128.seed | InfiniteTalk (Wan 2.1) + MelBand RoFormer | video.s2v | - |
+| video.a2v_ltx | video | LTX-2 audio-to-video, LTX-2.3 image+audio, HuMo | audio-driven-motion | - | - | UI templates: export API first | video.s2v | - |
+| vfx.motion_ref | vfx | transfer motion from a reference clip onto a still (IC-LoRA) | ltx-iclora-utils | ltx23_ic_lora_motion.api.json | image=200.image; video=199.file; seed=704.seed | LTX-2.3 22B + motion IC-LoRA (Lightricks license) | vfx.motion | - |
+| vfx.effect_ltx | vfx | LTX-2.5 effect from a photo | ltx-iclora-utils | ltx25_effects.api.json | image=395.image; seed=338.noise_seed | LTX-2.5 (Lightricks license) | vfx.onetake | - |
+| post.clean_text | post | remove burned-in subtitles or watermark, restore archival, style transition, ID-LoRA | ltx-iclora-utils | - | - | UI templates: export API first (rights-cleared footage only) | - | - |
+| vfx.recipe_read | vfx | read an effect off a reference clip into a JSON recipe | effect-recipe-read | forkfield_read_effect.api.json | image=1.image | Qwen3-VL 8B int8 | - | - |
+| vfx.recipe_apply | vfx | apply a read recipe to the user's photo | effect-recipe-read | forkfield_apply_open_ltx.api.json | image=1.image; seed=22.seed,54.noise_seed | Qwen-Image-Edit + LTX-2 (Lightricks license) | vfx.onetake | - |
+| qa.shot | qa | measured QC: freeze, black, cuts, flicker, soft, clipping (overrides VLM) | shot-qc | script:shot_qc.py | - | ffmpeg | - | * |
 | plan.previs | plan | prop or set previs mesh, blocking | image-to-3d | trellis2_image_to_3d.api.json | image=1.image | TRELLIS.2 + BiRefNet | - | max |
 | plan.connect | plan | submit, poll, fetch, cancel | comfyui-connect | script:comfy_client.py | - | none | - | * |
 
@@ -87,3 +105,21 @@ To plug in a new skill: create `skills/<new>/`, then add **one row** here. If it
 | gpu-queue | plan |
 | lora-dataset | plan |
 | color-match | post |
+
+## MORE_SKILLS_PASS2.md (pass 2)
+`analysis/MORE_SKILLS_PASS2.md` added 10 skills, each with the rows above:
+
+| Skill | Rows |
+|---|---|
+| lora-training | plan.lora |
+| control-to-video | control.pose, control.canny, control.ltx |
+| camera-control | camera.fun, camera.ati |
+| audio-driven-motion | video.s2v, video.talk_music, video.a2v_ltx |
+| previs-control-passes | plan.previs_passes |
+| multi-gpu-dispatch | plan.dispatch |
+| relighting | fix.relight_lights |
+| shot-qc | qa.shot |
+| ltx-iclora-utils | vfx.motion_ref, vfx.effect_ltx, post.clean_text |
+| effect-recipe-read | vfx.recipe_read, vfx.recipe_apply |
+
+Pass-1 candidates now covered: previs-blocking-3d (`plan.previs_passes`), gpu-queue (`plan.dispatch`), lora-dataset (`plan.lora`) and camera-move-verify (`qa.shot`, measured motion and freezes).

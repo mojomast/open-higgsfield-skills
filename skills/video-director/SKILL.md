@@ -72,6 +72,14 @@ For every shot, set `still.route` and `video.route` from `routing.md`. Extra pas
 | remove object / swap character | `vfx.remove` / `vfx.swap` (fallback `vfx.swap_ltx`) |
 | stylise footage / one-take effect | `vfx.restyle` / `vfx.onetake` |
 | join two shots smoothly | `transition.flf` (max) otherwise `transition.cut` |
+| motion or blocking must match a clip or previs | `control.pose` / `control.canny` (+ `job.params.video`), after `plan.previs_passes` |
+| an exact, named camera move | `camera.fun` (`params.MOVES`, for example `"orbit-left"`), or `camera.ati` for drawn paths |
+| audio drives the whole performance | `video.s2v` (`params.audio`), or `video.talk_music` for a singer on a full mix |
+| copy an effect from a reference clip | `vfx.recipe_read` then `vfx.recipe_apply` |
+| motion from a reference clip onto a still | `vfx.motion_ref` |
+| placed-light relight of a keyframe | `fix.relight_lights` (fallback `fix.relight`) |
+| a recurring identity needs a LoRA | `plan.lora`. The dataset gate is human and always runs before training |
+| several GPUs or servers | `plan.dispatch` (`multi-gpu-dispatch/scripts/dispatch.py`) |
 
 Unknown needs go to the closest row. If nothing fits, tell the user, and never call an unlisted closed API.
 
@@ -85,7 +93,9 @@ Stop at `still_retries`. At draft tier, keep the best-scoring attempt and log it
 
 ## 6. Video and continuity
 - Render the video from the approved still (or from the last frame of the `chain_from` shot). Use LTX frames `8n+1`, base sizes in multiples of 32, and strength1 1.0 for static shots and 0.7 otherwise. Stage 2 is always 1.0.
+- Measure every render with **shot-qc** (`qa.shot`: freeze, black, cuts, flicker, soft frames, clipping). Static cameras are exempt from the freeze check. A freeze or black flag fails the attempt. **When the measurements and the VLM disagree, the numbers win.**
 - Judge 3 frames (first, mid, last) with still-qa, and retry up to `video_retries` with a new seed.
+- Wan-family graphs (VACE, Fun Camera, S2V) use their sidecar `fps` (16) and 4n+1 frames instead of the LTX 8n+1 at 24 fps. `direct.py` handles this from `workflows/<file>.defaults.json`.
 - **continuity-check** looks at every join (last frame of A vs first frame of B): identity, wardrobe, light direction and screen direction. On a fail, regenerate B, or insert a `transition.flf` at max tier, up to `continuity_regens`.
 
 ## 7. Audio
@@ -115,6 +125,20 @@ The manifest itself is the full record of prompts, seeds, models and costs.
   - `python3 scripts/direct.py run m.json --url $COMFY_URL`
   - It exits with 3 at a human gate. Run `approve`, then re-run.
 - **Without it:** follow sections 1–9 by hand. Call each sibling skill's documented command, and update the manifest after **every** job (set the status to `done` with the outputs), so any agent can pick it up again.
+
+## Adopted from agentY's director design
+agentY (szprivate/agentY, MIT) runs 34 skills behind one orchestrator prompt. These rules were adopted here, rewritten in our own words:
+1. **Measurements beat descriptions.** shot-qc numbers override VLM claims about motion, freezes and black frames.
+2. **Say the plan, then act.** A numbered plan is shown, and you wait only at the gates that the user or the manifest set to human. You do not wait at every step.
+3. **Never end on a menu.** Pick a route, say in one line why, and continue. Ask only for what only the user can supply (a file, a credential, consent to spend or train).
+4. **Hard constraints.** A model or template the user names is never silently substituted. If its route is not ready, stop and ask rather than take the fallback. `direct.py` follows fallbacks automatically, so for a pinned route, set that row's `fallback` to `-` in your working copy of `routing.md`.
+5. **Approve once.** An approved gate is never put up for approval again for the same work.
+6. **One fix per QA note.** A retry changes only what the judge flagged and keeps the rest.
+7. **The dataset gate is human** (lora-training). Nothing trains on an unapproved or changed dataset.
+
+Not adopted:
+- agentY's hosted and partner API routes (fal, Kling, Seedance, DashScope), because this collection is open weights only
+- its canvas and viewer tools, which are specific to its UI
 
 ## Adding a skill
 Add one row to `references/routing.md` in the documented 9-column format, and give the skill a `requirements.md`. `direct.py routes` checks that the skill folder and workflow exist.

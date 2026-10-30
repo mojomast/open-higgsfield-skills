@@ -1,5 +1,3 @@
-<!-- Copied from jdnichollsc/seam src/seam/presets.py (MIT); vendor frontmatter removed. Rows naming closed/hosted models do not apply: use open-weights options only. -->
-
 """Transition presets: data in presets.yaml, rendered into a model-specific prompt."""
 
 from __future__ import annotations
