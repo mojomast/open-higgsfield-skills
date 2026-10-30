@@ -10,6 +10,8 @@ tracker). Cuts are snapped to the nearest beat: idea adapted from
 jalajbhandula/motionfield beat-cut recipe (MIT); see NOTICE.
 Music is ducked under narration with sidechaincompress.
 """
+# Web-safe H.264: 4:2:0 + High profile play in browsers, GitHub and Discord; faststart moves the index up front.
+WEB_SAFE = ["-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart"]
 import argparse, json, shlex, subprocess
 
 SIZES = {"9:16": (1080, 1920), "1:1": (1080, 1080), "16:9": (1920, 1080), "4:5": (1080, 1350)}
@@ -58,8 +60,8 @@ def build(a, durations):
         filt.append(f"[{n}:a]atrim=0:{total:.3f},afade=t=out:st={max(0,total-1.5):.3f}:d=1.5[aout]")
         amap = ["-map", "[aout]"]
     return (["ffmpeg", "-hide_banner", "-y", *inputs, "-filter_complex", ";".join(filt), "-map", f"[{cur}]", *amap,
-             "-t", f"{total:.3f}", "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-c:a", "aac", "-b:a", "192k",
-             "-movflags", "+faststart", a.out])
+             "-t", f"{total:.3f}", "-c:v", "libx264", "-crf", "16", "-preset", "medium", *WEB_SAFE, "-c:a", "aac", "-b:a", "192k",
+             a.out])
 
 
 def main():

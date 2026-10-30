@@ -18,3 +18,6 @@ Burn the captions in, or keep them as a sidecar:
 - Keep captions in the bottom 15% of the frame. For 9:16, raise them above the platform UI (about 20% up).
 - Deliver the SRT sidecar even when captions are burned in.
 - Whisper uses about 1.6 GB of VRAM. Its weights are MIT (unverified for your build).
+
+## Web-safe output
+Every H.264 encode uses `-pix_fmt yuv420p -profile:v high -movflags +faststart`. ffmpeg keeps 4:4:4 (High 4:4:4 Predictive) when the input is RGB, for example PNG stills or title cards, and browsers, GitHub and Discord cannot play that, and it shows no thumbnail. 4:2:0 High profile plays everywhere, and `+faststart` puts the index at the front so the file starts streaming at once. Keep these flags in any encode you add.

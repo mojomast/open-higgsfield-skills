@@ -57,6 +57,7 @@ def main():
     print(json.dumps({"srt": a.out, "cues": len(cues)}))
     if a.burn:
         cmd = ["ffmpeg", "-y", "-i", a.burn, "-vf", f"subtitles={a.out}:force_style='Fontsize=22,MarginV=40,Outline=2'",
+               "-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart",
                "-c:a", "copy", a.burned]
         print(" ".join(shlex.quote(x) for x in cmd))
         if a.run:

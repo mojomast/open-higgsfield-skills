@@ -17,3 +17,6 @@ Without `--run` the script only prints the ffmpeg command. Show the command, the
 5. **Repurposing:** re-run with `--aspect 9:16`, `1:1` or `4:5`. The crop is centered, so for vertical versions outpaint or reframe the key shots first with `image-edit`. See `references/fuobe-video-repurposer.md`.
 6. **Captions:** make an SRT with `subtitles-captions` (`make_srt.py --manifest`), then burn it in or ship it as a sidecar.
 7. After export, run `continuity-check` on the cut and do a last listen for audio clipping.
+
+## Web-safe output
+Every H.264 encode uses `-pix_fmt yuv420p -profile:v high -movflags +faststart`. ffmpeg keeps 4:4:4 (High 4:4:4 Predictive) when the input is RGB, for example PNG stills or title cards, and browsers, GitHub and Discord cannot play that, and it shows no thumbnail. 4:2:0 High profile plays everywhere, and `+faststart` puts the index at the front so the file starts streaming at once. Keep these flags in any encode you add.
